@@ -4,9 +4,9 @@ using System.Text;
 
 namespace BookingApp.Models.Rooms
 {
-    public class DoubleBed : Room
+    public class Apartment : Room
     {
-        public DoubleBed() : base(2)
+        public Apartment() : base(6)
         {
         }
     }
