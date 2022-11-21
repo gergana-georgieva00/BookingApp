@@ -47,7 +47,33 @@ namespace BookingApp.Core
 
         public string UploadRoomTypes(string hotelName, string roomTypeName)
         {
-            throw new NotImplementedException();
+            if (!this.hotels.All().Any(h => h.FullName == hotelName))
+            {
+                return $"Profile {hotelName} doesn’t exist!";
+            }
+
+            bool containsRoomType = false;
+            foreach (var hotel in this.hotels.All())
+            {
+                foreach (var room in hotel.Rooms.All())
+                {
+                    if (room.GetType().Name == roomTypeName)
+                    {
+                        containsRoomType = true;
+                        break;
+                    }
+                }
+            }
+
+            if (containsRoomType)
+            {
+                return "Room type is already created!";
+            }
+
+            if (true)
+            {
+
+            }
         }
     }
 }
