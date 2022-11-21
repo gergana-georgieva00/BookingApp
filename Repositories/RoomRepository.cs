@@ -3,6 +3,7 @@ using BookingApp.Models.Rooms.Contracts;
 using BookingApp.Repositories.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BookingApp.Repositories
@@ -23,12 +24,12 @@ namespace BookingApp.Repositories
 
         public IReadOnlyCollection<IRoom> All()
         {
-            throw new NotImplementedException();
+            return this.rooms.AsReadOnly();
         }
 
         public IRoom Select(string criteria)
         {
-            throw new NotImplementedException();
+            return this.rooms.Find(r => r.GetType().Name == criteria);
         }
     }
 }
