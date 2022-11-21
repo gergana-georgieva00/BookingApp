@@ -10,18 +10,15 @@ namespace BookingApp.Models.Rooms
         private int bedCapacity;
         private double pricePerNight;
 
-        public Room()
+        public Room(int bedCapacity)
         {
-
+            this.pricePerNight = 0;
+            this.bedCapacity = bedCapacity;
         }
 
         public int BedCapacity 
         {
             get => this.bedCapacity;
-            private set
-            {
-
-            }
         }
 
         public double PricePerNight
@@ -33,12 +30,14 @@ namespace BookingApp.Models.Rooms
                 {
                     throw new ArgumentException(Utilities.Messages.ExceptionMessages.PricePerNightNegative);
                 }
+
+                this.pricePerNight = value;
             }
         }
 
         public void SetPrice(double price)
         {
-            throw new NotImplementedException();
+            this.PricePerNight = price;
         }
     }
 }
