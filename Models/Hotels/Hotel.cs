@@ -68,14 +68,12 @@ namespace BookingApp.Models.Hotels
 
         public IRepository<IRoom> Rooms
         {
-            get;
-            private set;
+            get => this.rooms;
         }
 
         public IRepository<IBooking> Bookings
         {
-            get;
-            private set;
+            get => this.bookings;
         }
     }
 }
