@@ -22,12 +22,12 @@ namespace BookingApp.Repositories
 
         public IReadOnlyCollection<IHotel> All()
         {
-            throw new NotImplementedException();
+            return this.hotels.AsReadOnly();
         }
 
         public IHotel Select(string criteria)
         {
-            throw new NotImplementedException();
+            return this.hotels.Find(h => h.FullName == criteria);
         }
     }
 }
