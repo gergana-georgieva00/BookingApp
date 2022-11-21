@@ -1,7 +1,9 @@
 ﻿using BookingApp.Core.Contracts;
+using BookingApp.Models.Hotels;
 using BookingApp.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BookingApp.Core
@@ -17,7 +19,15 @@ namespace BookingApp.Core
 
         public string AddHotel(string hotelName, int category)
         {
-            throw new NotImplementedException();
+            Hotel hotel = new Hotel(hotelName, category);
+
+            if (hotels.All().Any(h => h.FullName == hotelName))
+            {
+                return $"Hotel {hotelName} is already registered in our platform.";
+            }
+
+            this.hotels.AddNew(hotel);
+            return $"{category} stars hotel {hotelName} is registered in our platform and expects room availability to be uploaded.";
         }
 
         public string BookAvailableRoom(int adults, int children, int duration, int category)
