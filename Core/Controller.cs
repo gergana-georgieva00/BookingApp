@@ -1,5 +1,7 @@
 ﻿using BookingApp.Core.Contracts;
 using BookingApp.Models.Hotels;
+using BookingApp.Models.Rooms;
+using BookingApp.Models.Rooms.Contracts;
 using BookingApp.Repositories;
 using System;
 using System.Collections.Generic;
@@ -70,9 +72,20 @@ namespace BookingApp.Core
                 return "Room type is already created!";
             }
 
-            if (true)
+            IRoom room;
+            switch (roomTypeName)
             {
-
+                case "Apartment":
+                    room = new Apartment();
+                    break;
+                case "DoubleBed":
+                    room = new DoubleBed();
+                    break;
+                case "Studio":
+                    room = new Studio();
+                    break;
+                default:
+                    throw new ArgumentException(Utilities.Messages.ExceptionMessages.RoomTypeIncorrect);
             }
         }
     }
