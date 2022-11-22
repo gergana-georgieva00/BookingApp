@@ -75,7 +75,7 @@ namespace BookingApp.Core
                     if (room.PricePerNight > 0 && room.BedCapacity >= guestsCount)
                     {
                         hotelToBook = hotel;
-                        bookingNumber = hotel.Bookings.All().Count;
+                        bookingNumber = hotel.Bookings.All().Count + 1;
                         var booking = new Booking(room, duration, adults, children, bookingNumber);
                         hotelToBook.Bookings.AddNew(booking);
                         break;
@@ -90,7 +90,26 @@ namespace BookingApp.Core
 
         public string HotelReport(string hotelName)
         {
-            throw new NotImplementedException();
+            if (!this.hotels.All().Any(h => h.FullName == hotelName))
+            {
+                return Utilities.Messages.OutputMessages.HotelNameInvalid;
+            }
+
+            var hotel = this.hotels.All().ToList().Find(h => h.FullName == hotelName);
+
+            if (hotel.Bookings.All().Count == 0)
+            {
+                StringBuilder noRes = new StringBuilder();
+
+                noRes.AppendLine($"Hotel name: {hotelName}");
+                noRes.AppendLine($"--{hotel.Category} star hotel");
+                noRes.AppendLine($"--Turnover: {hotel.Turnover: F2} $");
+                noRes.AppendLine($"--Bookings:");
+
+                return "none";
+            }
+
+            return "";
         }
 
         public string SetRoomPrices(string hotelName, string roomTypeName, double price)
