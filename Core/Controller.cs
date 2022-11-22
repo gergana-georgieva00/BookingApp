@@ -59,21 +59,42 @@ namespace BookingApp.Core
                         return "Room type is not created yet!";
                     }
 
-                    break;
+                    roomNew = new Apartment();
+                    if (roomNew.PricePerNight != 0)
+                    {
+                        roomNew.SetPrice(price);
+                        return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
+                    }
+
+                    throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
                 case "DoubleBed":
                     if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
                     {
                         return "Room type is not created yet!";
                     }
 
-                    break;
+                    roomNew = new DoubleBed();
+                    if (roomNew.PricePerNight != 0)
+                    {
+                        roomNew.SetPrice(price);
+                        return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
+                    }
+
+                    throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
                 case "Studio":
                     if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
                     {
                         return "Room type is not created yet!";
                     }
 
-                    break;
+                    roomNew = new Studio();
+                    if (roomNew.PricePerNight != 0)
+                    {
+                        roomNew.SetPrice(price);
+                        return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
+                    }
+
+                    throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
                 default:
                     throw new ArgumentException(Utilities.Messages.ExceptionMessages.RoomTypeIncorrect);
             }
