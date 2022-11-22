@@ -44,7 +44,41 @@ namespace BookingApp.Core
 
         public string SetRoomPrices(string hotelName, string roomTypeName, double price)
         {
-            throw new NotImplementedException();
+            if (!this.hotels.All().Any(h => h.FullName == hotelName))
+            {
+                return $"Profile {hotelName} doesn’t exist!";
+            }
+
+            IRoom roomNew;
+            var currHotel = this.hotels.All().Where(h => h.FullName == hotelName).ToList()[0];
+            switch (roomTypeName)
+            {
+                case "Apartment":
+                    if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
+                    {
+                        return "Room type is not created yet!";
+                    }
+
+                    break;
+                case "DoubleBed":
+                    if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
+                    {
+                        return "Room type is not created yet!";
+                    }
+
+                    break;
+                case "Studio":
+                    if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
+                    {
+                        return "Room type is not created yet!";
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentException(Utilities.Messages.ExceptionMessages.RoomTypeIncorrect);
+            }
+
+            return null;
         }
 
         public string UploadRoomTypes(string hotelName, string roomTypeName)
@@ -72,18 +106,18 @@ namespace BookingApp.Core
                 return "Room type is already created!";
             }
 
-            IRoom room;
+            IRoom roomNew;
             switch (roomTypeName)
             {
                 case "Apartment":
-                    room = new Apartment();
-                    break;
+                    roomNew = new Apartment();
+                    return $"Successfully added Apartment room type in {hotelName} hotel!";
                 case "DoubleBed":
-                    room = new DoubleBed();
-                    break;
+                    roomNew = new DoubleBed();
+                    return $"Successfully added DoubleBed room type in {hotelName} hotel!";
                 case "Studio":
-                    room = new Studio();
-                    break;
+                    roomNew = new Studio();
+                    return $"Successfully added Studio room type in {hotelName} hotel!";
                 default:
                     throw new ArgumentException(Utilities.Messages.ExceptionMessages.RoomTypeIncorrect);
             }
