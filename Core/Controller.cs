@@ -18,7 +18,7 @@ namespace BookingApp.Core
 
         public Controller()
         {
-
+            this.hotels = new HotelRepository();
         }
 
         public string AddHotel(string hotelName, int category)

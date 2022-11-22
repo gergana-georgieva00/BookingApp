@@ -1,6 +1,7 @@
 ﻿using BookingApp.Models.Bookings.Contracts;
 using BookingApp.Models.Hotels.Contacts;
 using BookingApp.Models.Rooms.Contracts;
+using BookingApp.Repositories;
 using BookingApp.Repositories.Contracts;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace BookingApp.Models.Hotels
         {
             this.fullName = fullName;
             this.category = category;
+            rooms = new RoomRepository();
+            bookings = new BookingRepository();
         }
 
         public string FullName 
