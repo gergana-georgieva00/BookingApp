@@ -1,5 +1,7 @@
 ﻿using BookingApp.Core.Contracts;
+using BookingApp.Models.Bookings;
 using BookingApp.Models.Hotels;
+using BookingApp.Models.Hotels.Contacts;
 using BookingApp.Models.Rooms;
 using BookingApp.Models.Rooms.Contracts;
 using BookingApp.Repositories;
@@ -50,14 +52,40 @@ namespace BookingApp.Core
 
             roomsWithSetPrice = roomsWithSetPrice.OrderBy(r => r.BedCapacity).ToList();
             int guestsCount = adults + children;
-            var roomLowestCapacity = roomsWithSetPrice[0];
+            var roomsLowestCapacity = roomsWithSetPrice.Where(r => r.BedCapacity >= guestsCount).ToList();
 
             if (!orderedHotels.Any(h => h.Category == category))
             {
                 return Utilities.Messages.OutputMessages.CategoryInvalid;
             }
 
-            return null;
+            if (!roomsLowestCapacity.Any())
+            {
+                return "We cannot offer appropriate room for your request.";
+            }
+
+            var roomFound = roomsLowestCapacity[0];
+            IHotel hotelToBook;
+            int bookingNumber = 0;
+            string hotelName = "";
+            foreach (var hotel in orderedHotels.Where(h => h.Category == category))
+            {
+                foreach (var room in hotel.Rooms.All().OrderBy(r => r.BedCapacity))
+                {
+                    if (room.PricePerNight > 0 && room.BedCapacity >= guestsCount)
+                    {
+                        hotelToBook = hotel;
+                        bookingNumber = hotel.Bookings.All().Count;
+                        var booking = new Booking(room, duration, adults, children, bookingNumber);
+                        hotelToBook.Bookings.AddNew(booking);
+                        break;
+                    }
+                }
+            }
+
+            
+
+            return $"Booking number {bookingNumber} for {hotelName} hotel is successful!";
         }
 
         public string HotelReport(string hotelName)
