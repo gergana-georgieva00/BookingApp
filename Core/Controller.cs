@@ -97,19 +97,24 @@ namespace BookingApp.Core
 
             var hotel = this.hotels.All().ToList().Find(h => h.FullName == hotelName);
 
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine($"Hotel name: {hotelName}");
+            sb.AppendLine($"--{hotel.Category} star hotel");
+            sb.AppendLine($"--Turnover: {hotel.Turnover: F2} $");
+            sb.AppendLine($"--Bookings:");
+
             if (hotel.Bookings.All().Count == 0)
             {
-                StringBuilder noRes = new StringBuilder();
-
-                noRes.AppendLine($"Hotel name: {hotelName}");
-                noRes.AppendLine($"--{hotel.Category} star hotel");
-                noRes.AppendLine($"--Turnover: {hotel.Turnover: F2} $");
-                noRes.AppendLine($"--Bookings:");
-
-                return "none";
+                return sb.ToString() + "none";
             }
 
-            return "";
+            foreach (var reservation in hotel.Bookings.All())
+            {
+                sb.AppendLine(reservation.BookingSummary());
+            }
+
+            return sb.ToString();
         }
 
         public string SetRoomPrices(string hotelName, string roomTypeName, double price)
