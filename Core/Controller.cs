@@ -34,7 +34,30 @@ namespace BookingApp.Core
 
         public string BookAvailableRoom(int adults, int children, int duration, int category)
         {
-            throw new NotImplementedException();
+            var orderedHotels = this.hotels.All().OrderBy(h => h.FullName).ToList();
+            var roomsWithSetPrice = new List<IRoom>();
+
+            foreach (var hotel in orderedHotels)
+            {
+                foreach (var room in hotel.Rooms.All())
+                {
+                    if (room.PricePerNight > 0)
+                    {
+                        roomsWithSetPrice.Add(room);
+                    }
+                }
+            }
+
+            roomsWithSetPrice = roomsWithSetPrice.OrderBy(r => r.BedCapacity).ToList();
+            int guestsCount = adults + children;
+            var roomLowestCapacity = roomsWithSetPrice[0];
+
+            if (!orderedHotels.Any(h => h.Category == category))
+            {
+                return Utilities.Messages.OutputMessages.CategoryInvalid;
+            }
+
+            return null;
         }
 
         public string HotelReport(string hotelName)
