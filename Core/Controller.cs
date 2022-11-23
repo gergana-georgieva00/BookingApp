@@ -92,7 +92,7 @@ namespace BookingApp.Core
         {
             if (!this.hotels.All().Any(h => h.FullName == hotelName))
             {
-                return Utilities.Messages.OutputMessages.HotelNameInvalid;
+                return $"Profile {hotelName} doesn’t exist!";
             }
 
             var hotel = this.hotels.All().ToList().Find(h => h.FullName == hotelName);
