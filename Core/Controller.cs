@@ -99,7 +99,7 @@ namespace BookingApp.Core
 
             sb.AppendLine($"Hotel name: {hotelName}");
             sb.AppendLine($"--{hotel.Category} star hotel");
-            sb.AppendLine($"--Turnover: {hotel.Turnover: F2} $");
+            sb.AppendLine($"--Turnover: {hotel.Turnover:F2} $");
             sb.AppendLine($"--Bookings:");
 
             if (hotel.Bookings.All().Count == 0)
@@ -112,7 +112,7 @@ namespace BookingApp.Core
                 sb.AppendLine(reservation.BookingSummary());
             }
 
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         public string SetRoomPrices(string hotelName, string roomTypeName, double price)
