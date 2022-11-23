@@ -36,6 +36,11 @@ namespace BookingApp.Core
 
         public string BookAvailableRoom(int adults, int children, int duration, int category)
         {
+            if (!hotels.All().Any(h => h.Category == category))
+            {
+                return $"{category} star hotel is not available in our platform.";
+            }
+
             var orderedHotels = this.hotels.All().OrderBy(h => h.FullName).ToList();
             var roomsWithSetPrice = new List<IRoom>();
 
@@ -54,10 +59,7 @@ namespace BookingApp.Core
             int guestsCount = adults + children;
             var roomsLowestCapacity = roomsWithSetPrice.Where(r => r.BedCapacity >= guestsCount).ToList();
 
-            if (!orderedHotels.Any(h => h.Category == category))
-            {
-                return Utilities.Messages.OutputMessages.CategoryInvalid;
-            }
+            
 
             if (!roomsLowestCapacity.Any())
             {
