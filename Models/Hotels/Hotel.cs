@@ -18,8 +18,8 @@ namespace BookingApp.Models.Hotels
 
         public Hotel(string fullName, int category)
         {
-            this.fullName = fullName;
-            this.category = category;
+            this.FullName = fullName;
+            this.Category = category;
             rooms = new RoomRepository();
             bookings = new BookingRepository();
         }
