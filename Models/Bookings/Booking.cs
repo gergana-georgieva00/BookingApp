@@ -17,9 +17,9 @@ namespace BookingApp.Models.Bookings
         public Booking(IRoom room, int residenceDuration, int adultsCount, int childrenCount, int bookingNumber)
         {
             this.room = room;
-            this.residenceDuration = residenceDuration;
-            this.adultsCount = adultsCount;
-            this.childrenCount = childrenCount;
+            this.ResidenceDuration = residenceDuration;
+            this.AdultsCount = adultsCount;
+            this.ChildrenCount = childrenCount;
             this.bookingNumber = bookingNumber;
         }
 
