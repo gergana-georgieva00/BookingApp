@@ -5,6 +5,7 @@ using BookingApp.Models.Hotels.Contacts;
 using BookingApp.Models.Rooms;
 using BookingApp.Models.Rooms.Contracts;
 using BookingApp.Repositories;
+using BookingApp.Utilities.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,51 +42,37 @@ namespace BookingApp.Core
                 return $"{category} star hotel is not available in our platform.";
             }
 
-            var orderedHotels = this.hotels.All().OrderBy(h => h.FullName).ToList();
-            var roomsWithSetPrice = new List<IRoom>();
+            var availableRooms = new Dictionary<IRoom, string>();
 
-            foreach (var hotel in orderedHotels)
-            {
+            foreach (var hotel in hotels.All().Where(x => x.Category == category).OrderBy(x => x.FullName))
                 foreach (var room in hotel.Rooms.All())
-                {
                     if (room.PricePerNight > 0)
-                    {
-                        roomsWithSetPrice.Add(room);
-                    }
-                }
-            }
+                        availableRooms.Add(room, hotel.FullName);
 
-            roomsWithSetPrice = roomsWithSetPrice.OrderBy(r => r.BedCapacity).ToList();
-            int guestsCount = adults + children;
-            var roomsLowestCapacity = roomsWithSetPrice.Where(r => r.BedCapacity >= guestsCount).ToList();
+            IRoom roomToBook = null;
+            string hotelNameToBook = string.Empty;
+            int people = adults + children;
 
-            
-
-            if (!roomsLowestCapacity.Any())
+            foreach (var room in availableRooms.OrderBy(x => x.Key.BedCapacity))
             {
-                return "We cannot offer appropriate room for your request.";
-            }
-
-            var roomFound = roomsLowestCapacity[0];
-            IHotel hotelToBook;
-            int bookingNumber = 0;
-            string hotelName = "";
-            foreach (var hotel in orderedHotels.Where(h => h.Category == category))
-            {
-                foreach (var room in hotel.Rooms.All().OrderBy(r => r.BedCapacity))
+                if (room.Key.BedCapacity >= people)
                 {
-                    if (room.PricePerNight > 0 && room.BedCapacity >= guestsCount)
-                    {
-                        hotelToBook = hotel;
-                        bookingNumber = hotel.Bookings.All().Count + 1;
-                        var booking = new Booking(room, duration, adults, children, bookingNumber);
-                        hotelToBook.Bookings.AddNew(booking);
-                        break;
-                    }
+                    roomToBook = room.Key;
+                    hotelNameToBook = room.Value;
+                    break;
                 }
             }
 
-            return $"Booking number {bookingNumber} for {hotelName} hotel is successful!";
+            if (roomToBook == null)
+                return String.Format(OutputMessages.RoomNotAppropriate);
+
+            IHotel hotelToBook = hotels.Select(hotelNameToBook);
+            int newBookingNumber = hotelToBook.Bookings.All().Count + 1;
+
+            Booking newBooking = new Booking(roomToBook, duration, adults, children, newBookingNumber);
+            hotelToBook.Bookings.AddNew(newBooking);
+
+            return String.Format(OutputMessages.BookingSuccessful, newBookingNumber, hotelNameToBook);
         }
 
         public string HotelReport(string hotelName)
@@ -120,70 +107,22 @@ namespace BookingApp.Core
 
         public string SetRoomPrices(string hotelName, string roomTypeName, double price)
         {
-            if (!this.hotels.All().Any(h => h.FullName == hotelName))
-            {
-                return $"Profile {hotelName} doesn’t exist!";
-            }
+            if (!hotels.All().Any(x => x.FullName == hotelName))
+                return String.Format(OutputMessages.HotelNameInvalid, hotelName);
 
-            IRoom roomNew;
-            foreach (var hotel in hotels.All())
-            {
-                foreach (var room in hotel.Rooms.All())
-                {
-                    if (room.GetType().Name == roomTypeName)
-                    {
-                        roomNew = room;
+            if (!new string[] { "Apartment", "DoubleBed", "Studio" }.Contains(roomTypeName))
+                throw new ArgumentException(ExceptionMessages.RoomTypeIncorrect);
 
-                        var currHotel = this.hotels.All().Where(h => h.FullName == hotelName).ToList()[0];
-                        switch (roomTypeName)
-                        {
-                            case "Apartment":
-                                if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
-                                {
-                                    return "Room type is not created yet!";
-                                }
+            IHotel hotel = hotels.All().First(x => x.FullName == hotelName);
+            if (!hotel.Rooms.All().Any(x => x.GetType().Name == roomTypeName))
+                return OutputMessages.RoomTypeNotCreated;
 
-                                if (roomNew.PricePerNight == 0)
-                                {
-                                    roomNew.SetPrice(price);
-                                    return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
-                                }
+            IRoom room = hotel.Rooms.All().First(x => x.GetType().Name == roomTypeName);
+            if (room.PricePerNight != 0)
+                throw new InvalidOperationException(ExceptionMessages.PriceAlreadySet);
 
-                                throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
-                            case "DoubleBed":
-                                if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
-                                {
-                                    return "Room type is not created yet!";
-                                }
-
-                                if (roomNew.PricePerNight == 0)
-                                {
-                                    roomNew.SetPrice(price);
-                                    return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
-                                }
-
-                                throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
-                            case "Studio":
-                                if (!currHotel.Rooms.All().Any(r => r.GetType().Name == roomTypeName))
-                                {
-                                    return "Room type is not created yet!";
-                                }
-
-                                if (roomNew.PricePerNight == 0)
-                                {
-                                    roomNew.SetPrice(price);
-                                    return $"Price of {roomTypeName} room type in {hotelName} hotel is set!";
-                                }
-
-                                throw new InvalidOperationException(Utilities.Messages.ExceptionMessages.PriceAlreadySet);
-                            default:
-                                throw new ArgumentException(Utilities.Messages.ExceptionMessages.RoomTypeIncorrect);
-                        }
-                    }
-                }
-            }
-
-            return null;
+            room.SetPrice(price);
+            return string.Format(OutputMessages.PriceSetSuccessfully, roomTypeName, hotelName);
         }
 
         public string UploadRoomTypes(string hotelName, string roomTypeName)
